@@ -1,6 +1,7 @@
 # --
 # Kernel/System/ImportExport/ObjectBackend/FAQ.pm
 # Copyright (C) 2006-2015 c.a.p.e. IT GmbH, http://www.cape-it.de
+# Maintenance 2018 - Perl-Services.de, http://perl-services.de
 #
 # import/export backend for FAQ
 # written/edited by:
@@ -46,21 +47,28 @@ sub new {
 sub ObjectAttributesGet {
     my ( $Self, %Param ) = @_;
 
+    my $LogObject   = $Kernel::OM->Get('Kernel::System::Log');
+    my $FAQObject   = $Kernel::OM->Get('Kernel::System::FAQ');
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
     # check needed object
     if ( !$Param{UserID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Log( Priority => 'error', Message => 'Need UserID!' );
+        $LogObject->Log(
+            Priority => 'error',
+            Message  => 'Need UserID!',
+        );
         return;
     }
-    my $CategoryTreeListRef = $Kernel::OM->Get('Kernel::System::FAQ')->CategoryTreeList(
+
+    my $CategoryTreeListRef = $FAQObject->CategoryTreeList(
         Valid  => 0,
         UserID => 1,
     );
 
     my %CategoryList = %{$CategoryTreeListRef};
-    my %StateList    = $Kernel::OM->Get('Kernel::System::FAQ')->StateList( UserID => 1, );
-    my %LanguageList = $Kernel::OM->Get('Kernel::System::FAQ')->LanguageList( UserID => 1, );
-    my %GroupList    = $Kernel::OM->Get('Kernel::System::Group')->GroupList();
+    my %StateList    = $FAQObject->StateList( UserID => 1, );
+    my %LanguageList = $FAQObject->LanguageList( UserID => 1, );
+    my %GroupList    = $GroupObject->GroupList();
     my %FormatList   = ( "plain" => "PlainText", "html" => "HTML" );
 
     my $Attributes = [
@@ -128,10 +136,13 @@ sub ObjectAttributesGet {
 sub MappingObjectAttributesGet {
     my ( $Self, %Param ) = @_;
 
+    my $LogObject          = $Kernel::OM->Get('Kernel::System::Log');
+    my $ImportExportObject = $Kernel::OM->Get('Kernel::System::ImportExport');
+
     # check needed stuff
     for my $Argument (qw(TemplateID UserID)) {
         if ( !$Param{$Argument} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "Need $Argument!",
             );
@@ -140,10 +151,11 @@ sub MappingObjectAttributesGet {
     }
 
     # get object data
-    my $ObjectData = $Kernel::OM->Get('Kernel::System::ImportExport')->ObjectDataGet(
+    my $ObjectData = $ImportExportObject->ObjectDataGet(
         TemplateID => $Param{TemplateID},
         UserID     => $Param{UserID},
     );
+
     my $ElementList = [
         {
             Key   => 'Number',
@@ -242,10 +254,12 @@ get the search object attributes of an object as array/hash reference
 sub SearchAttributesGet {
     my ( $Self, %Param ) = @_;
 
+    my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+
     # check needed stuff
     for my $Argument (qw(TemplateID UserID)) {
         if ( !$Param{$Argument} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "Need $Argument!",
             );
@@ -292,10 +306,15 @@ get export data as 2D-array-hash reference
 sub ExportDataGet {
     my ( $Self, %Param ) = @_;
 
+    my $LogObject          = $Kernel::OM->Get('Kernel::System::Log');
+    my $FAQObject          = $Kernel::OM->Get('Kernel::System::FAQ');
+    my $HTMLUtilsObject    = $Kernel::OM->Get('Kernel::System::HTMLUtils');
+    my $ImportExportObject = $Kernel::OM->Get('Kernel::System::ImportExport');
+
     # check needed stuff
     for my $Argument (qw(TemplateID UserID)) {
         if ( !$Param{$Argument} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "Need $Argument!",
             );
@@ -304,14 +323,14 @@ sub ExportDataGet {
     }
 
     # get object data
-    my $ObjectData = $Kernel::OM->Get('Kernel::System::ImportExport')->ObjectDataGet(
+    my $ObjectData = $ImportExportObject->ObjectDataGet(
         TemplateID => $Param{TemplateID},
         UserID     => $Param{UserID},
     );
 
     # check object data
     if ( !$ObjectData || ref $ObjectData ne 'HASH' ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "No object data found for the template id $Param{TemplateID}",
         );
@@ -319,7 +338,7 @@ sub ExportDataGet {
     }
 
     # get the mapping list
-    my $MappingList = $Kernel::OM->Get('Kernel::System::ImportExport')->MappingList(
+    my $MappingList = $ImportExportObject->MappingList(
         TemplateID => $Param{TemplateID},
         UserID     => $Param{UserID},
     );
@@ -327,7 +346,7 @@ sub ExportDataGet {
     # check the mapping list
     if ( !$MappingList || ref $MappingList ne 'ARRAY' || !@{$MappingList} ) {
 
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "No valid mapping list found for the template id $Param{TemplateID}",
         );
@@ -340,7 +359,7 @@ sub ExportDataGet {
 
         # get mapping object data
         my $MappingObjectData =
-            $Kernel::OM->Get('Kernel::System::ImportExport')->MappingObjectDataGet(
+            $ImportExportObject->MappingObjectDataGet(
             MappingID => $MappingID,
             UserID    => $Param{UserID},
             );
@@ -348,7 +367,7 @@ sub ExportDataGet {
         # check mapping object data
         if ( !$MappingObjectData || ref $MappingObjectData ne 'HASH' ) {
 
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "No valid mapping list found for the template id $Param{TemplateID}",
             );
@@ -359,21 +378,21 @@ sub ExportDataGet {
     }
 
     # get search data
-    my $SearchData = $Kernel::OM->Get('Kernel::System::ImportExport')->SearchDataGet(
+    my $SearchData = $ImportExportObject->SearchDataGet(
         TemplateID => $Param{TemplateID},
         UserID     => $Param{UserID},
     );
 
     if ( $SearchData && ref($SearchData) ne 'HASH' ) {
         $SearchData = 0;
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message =>
                 "FAQ2CustomerUser: search data is not a hash ref - ignoring search limitation.",
         );
     }
 
-    my @FAQList = $Kernel::OM->Get('Kernel::System::FAQ')->FAQSearch(
+    my @FAQList = $FAQObject->FAQSearch(
         Title => $SearchData->{FAQTitle} || '*',
         Limit => $SearchData->{Limit}    || '100000',
         UserID => 1,
@@ -388,7 +407,7 @@ sub ExportDataGet {
     # instead of creating new entries
     for my $FAQID ( sort { $a <=> $b } @FAQList ) {
 
-        my %FAQData = $Kernel::OM->Get('Kernel::System::FAQ')->FAQGet(
+        my %FAQData = $FAQObject->FAQGet(
             FAQID      => $FAQID,
             UserID     => 1,        # no permission restriction for this export
             ItemFields => 1,
@@ -399,17 +418,17 @@ sub ExportDataGet {
 
         $FAQData{Approved} = $FAQData{Approved} ? "yes" : "no";
 
-        my %LanguageList = $Kernel::OM->Get('Kernel::System::FAQ')->LanguageList( UserID => 1, );
+        my %LanguageList = $FAQObject->LanguageList( UserID => 1, );
         $FAQData{Language} = $LanguageList{ $FAQData{LanguageID} };
 
-        my %StateList = $Kernel::OM->Get('Kernel::System::FAQ')->StateList( UserID => 1, );
+        my %StateList = $FAQObject->StateList( UserID => 1, );
         $FAQData{State} = $StateList{ $FAQData{StateID} };
 
         # build full category name...
         my @NamePartsArray = qw{};
         my $ParentID       = $FAQData{CategoryID};
         while ($ParentID) {
-            my %CurrCategoryData = $Kernel::OM->Get('Kernel::System::FAQ')->CategoryGet(
+            my %CurrCategoryData = $FAQObject->CategoryGet(
                 CategoryID => $ParentID,
                 UserID     => 1,
             );
@@ -429,8 +448,7 @@ sub ExportDataGet {
                 if ( $ObjectData->{Format} && $ObjectData->{Format} eq "plain" ) {
                     $FAQData{$Key} =~ s/<xml>.*?<\/xml>//segxmi;
                     $FAQData{$Key} =~ s/<style>.*?<\/style>//segxmi;
-                    $FAQData{$Key} =
-                        $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToAscii( "String" => $FAQData{$Key} );
+                    $FAQData{$Key} = $HTMLUtilsObject->ToAscii( "String" => $FAQData{$Key} );
                 }
                 push( @CurrRow, $FAQData{$Key} );
             }
@@ -461,10 +479,16 @@ import one row of the import data
 sub ImportDataSave {
     my ( $Self, %Param ) = @_;
 
+    my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
+    my $LogObject          = $Kernel::OM->Get('Kernel::System::Log');
+    my $FAQObject          = $Kernel::OM->Get('Kernel::System::FAQ');
+    my $HTMLUtilsObject    = $Kernel::OM->Get('Kernel::System::HTMLUtils');
+    my $ImportExportObject = $Kernel::OM->Get('Kernel::System::ImportExport');
+
     # check needed stuff
     for my $Argument (qw(TemplateID ImportDataRow UserID)) {
         if ( !$Param{$Argument} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "Need $Argument!",
             );
@@ -474,7 +498,7 @@ sub ImportDataSave {
 
     # check import data row
     if ( ref $Param{ImportDataRow} ne 'ARRAY' ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => 'ImportDataRow must be an array reference',
         );
@@ -482,14 +506,14 @@ sub ImportDataSave {
     }
 
     # get object data
-    my $ObjectData = $Kernel::OM->Get('Kernel::System::ImportExport')->ObjectDataGet(
+    my $ObjectData = $ImportExportObject->ObjectDataGet(
         TemplateID => $Param{TemplateID},
         UserID     => $Param{UserID},
     );
 
     # check object data
     if ( !$ObjectData || ref $ObjectData ne 'HASH' ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "No object data found for the template id $Param{TemplateID}",
         );
@@ -497,7 +521,7 @@ sub ImportDataSave {
     }
 
     # get the mapping list
-    my $MappingList = $Kernel::OM->Get('Kernel::System::ImportExport')->MappingList(
+    my $MappingList = $ImportExportObject->MappingList(
         TemplateID => $Param{TemplateID},
         UserID     => $Param{UserID},
     );
@@ -505,7 +529,7 @@ sub ImportDataSave {
     # check the mapping list
     if ( !$MappingList || ref $MappingList ne 'ARRAY' || !@{$MappingList} ) {
 
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "No valid mapping list found for the template id $Param{TemplateID}",
         );
@@ -526,15 +550,15 @@ sub ImportDataSave {
 
         # get mapping object data
         my $MappingObjectData =
-            $Kernel::OM->Get('Kernel::System::ImportExport')->MappingObjectDataGet(
-            MappingID => $MappingID,
-            UserID    => $Param{UserID},
+            $ImportExportObject->MappingObjectDataGet(
+                MappingID => $MappingID,
+                UserID    => $Param{UserID},
             );
 
         # check mapping object data
         if ( !$MappingObjectData || ref $MappingObjectData ne 'HASH' ) {
 
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "No valid mapping list found for template id $Param{TemplateID}",
             );
@@ -548,7 +572,7 @@ sub ImportDataSave {
             && $Identifier{ $MappingObjectData->{Key} }
             )
         {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "Can't import this entity. "
                     . "'$MappingObjectData->{Key}' has been used multiple "
@@ -563,7 +587,7 @@ sub ImportDataSave {
 
         if ( $ObjectData->{Format} && $ObjectData->{Format} eq "plain" ) {
             $NewFAQData{ $MappingObjectData->{Key} } =
-                $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML( "String" => $Param{ImportDataRow}->[$Counter] );
+                $HTMLUtilsObject->ToHTML( "String" => $Param{ImportDataRow}->[$Counter] );
         }
         else {
             $NewFAQData{ $MappingObjectData->{Key} } = $Param{ImportDataRow}->[$Counter];
@@ -577,7 +601,7 @@ sub ImportDataSave {
     }
 
     if ( $IsHeadline && $Param{Counter} == 1 ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "ImportDataSave: line $Param{Counter} contains only "
                 . "mapping keys names. It is likely that it is a headline. "
@@ -591,19 +615,19 @@ sub ImportDataSave {
     # PREPARE DATA...
 
     # get all FAQ language ids
-    my %LanguageList = $Kernel::OM->Get('Kernel::System::FAQ')->LanguageList( UserID => 1, );
-    my %ReverseLanguageList = reverse( $Kernel::OM->Get('Kernel::System::FAQ')->LanguageList( UserID => 1, ) );
+    my %LanguageList = $FAQObject->LanguageList( UserID => 1, );
+    my %ReverseLanguageList = reverse %LanguageList;
 
     # get all state type ids
-    my %StateList = $Kernel::OM->Get('Kernel::System::FAQ')->StateList( UserID => 1, );
-    my %ReverseStateList = reverse(%StateList);
+    my %StateList = $FAQObject->StateList( UserID => 1, );
+    my %ReverseStateList = reverse %StateList;
 
     my $ItemID     = 0;
     my $ReturnCode = "";                           # Created | Changed | Failed
     my $FAQNumber  = $Param{ImportDataRow}->[0];
 
     # check approval-state...
-    if ( !$Kernel::OM->Get('Kernel::Config')->Get('FAQ::ApprovalRequired') ) {
+    if ( !$ConfigObject->Get('FAQ::ApprovalRequired') ) {
         $NewFAQData{Approved} = "1";
     }
     elsif ( $NewFAQData{Approved} && ( $NewFAQData{Approved} =~ /\D/ ) ) {
@@ -622,7 +646,7 @@ sub ImportDataSave {
     }
 
     if ( !$NewFAQData{LanguageID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "Can't import entity $Param{Counter}: "
                 . "No language given or found!",
@@ -641,7 +665,7 @@ sub ImportDataSave {
     }
 
     if ( !$NewFAQData{StateID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "Can't import entity $Param{Counter}: "
                 . "No state given or found!",
@@ -667,7 +691,7 @@ sub ImportDataSave {
     }
 
     if ( !$NewFAQData{CategoryID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "Can't import entity $Param{Counter}: "
                 . "No category given, created or found!",
@@ -693,7 +717,7 @@ sub ImportDataSave {
     my $FAQID = 0;
 
     if ( $NewFAQData{Number} && $Identifier{Number} ) {
-        my @FAQList = $Kernel::OM->Get('Kernel::System::FAQ')->FAQSearch(
+        my @FAQList = $FAQObject->FAQSearch(
             Number => $NewFAQData{Number} || '',
             Limit  => 1,
             UserID => 1,
@@ -706,13 +730,13 @@ sub ImportDataSave {
         # update existing FAQ entry...
         if ($FAQID) {
 
-            my %FAQData = $Kernel::OM->Get('Kernel::System::FAQ')->FAQGet(
+            my %FAQData = $FAQObject->FAQGet(
                 FAQID      => $FAQID,
                 UserID     => 1,
                 ItemFields => 1,
             );
 
-            $ItemID = $Kernel::OM->Get('Kernel::System::FAQ')->FAQUpdate(
+            $ItemID = $FAQObject->FAQUpdate(
                 ItemID      => $FAQID,
                 Title       => $NewFAQData{Title} || $FAQData{Title},
                 CategoryID  => $NewFAQData{CategoryID} || $FAQData{CategoryID},
@@ -731,7 +755,7 @@ sub ImportDataSave {
                 UserID      => 1,
             );
             if ($ItemID) {
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                $LogObject->Log(
                     Priority => 'notice',
                     Message  => "Updated entity '$FAQID' with data from line "
                         . "$Param{Counter}.",
@@ -739,7 +763,7 @@ sub ImportDataSave {
                 $ReturnCode = "Changed";
             }
             else {
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                $LogObject->Log(
                     Priority => 'error',
                     Message  => "Could not update entity '$FAQID' with data from "
                         . "line $Param{Counter}.!",
@@ -748,7 +772,7 @@ sub ImportDataSave {
 
         }
         else {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'notice',
                 Message  => "FAQ item with number '$NewFAQData{Number}' does not"
                     . " exist. Treating line $Param{Counter} as if no attribute"
@@ -762,7 +786,7 @@ sub ImportDataSave {
     # create new FAQ item...
     # if no FAQID was found (or it wasn't searched for)
     if ( !$FAQID ) {
-        $ItemID = $Kernel::OM->Get('Kernel::System::FAQ')->FAQAdd(
+        $ItemID = $FAQObject->FAQAdd(
             Title       => $NewFAQData{Title},
             CategoryID  => $NewFAQData{CategoryID},
             StateID     => $NewFAQData{StateID},
@@ -779,14 +803,14 @@ sub ImportDataSave {
             UserID      => 1,
         );
         if ($ItemID) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'notice',
                 Message  => "Added new FAQ entry with data from line $Param{Counter}.",
             );
             $ReturnCode = "Created";
         }
         else {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "Could not add entity for line $Param{Counter}!",
             );
@@ -798,20 +822,25 @@ sub ImportDataSave {
 
 sub _CheckCategory {
     my ( $Self, %Param ) = @_;
+
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+    my $FAQObject   = $Kernel::OM->Get('Kernel::System::FAQ');
+    my $LogObject   = $Kernel::OM->Get('Kernel::System::Log');
+
     my %Result   = ();
     my $ParentID = '0';
 
     # get group id for faq group
     my $DefaultFAQGroupID = $Param{DefaultGroupID};
     if ( !$DefaultFAQGroupID ) {
-        $DefaultFAQGroupID = $Kernel::OM->Get('Kernel::System::Group')->GroupLookup(
+        $DefaultFAQGroupID = $GroupObject->GroupLookup(
             Group => 'faq',
         );
     }
 
     my @CategoryNamePartsArray = split( "::", $Param{Category} );
 
-    my $CategoryHashRef = $Kernel::OM->Get('Kernel::System::FAQ')->CategoryList(
+    my $CategoryHashRef = $FAQObject->CategoryList(
         UserID => 1,
     );
 
@@ -835,19 +864,19 @@ sub _CheckCategory {
 
             # create category in this level...
             else {
-                my $NewCategoryID = $Kernel::OM->Get('Kernel::System::FAQ')->CategoryAdd(
+                my $NewCategoryID = $FAQObject->CategoryAdd(
                     Name     => $CurrNamePart,
                     ParentID => $ParentID || '0',
                     Comment  => 'automatically created by FAQ-Import',
                     ValidID  => 1,
                     UserID   => 1,
                 );
-                $Kernel::OM->Get('Kernel::System::FAQ')->SetCategoryGroup(
+                $FAQObject->SetCategoryGroup(
                     CategoryID => $NewCategoryID,
                     GroupIDs   => [$DefaultFAQGroupID],
                     UserID     => 1,
                 );
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                $LogObject->Log(
                     Priority => 'notice',
                     Message  => "New category '$CurrNamePart' (parent $ParentID)"
                         . " created from line $Param{Counter}.!",
@@ -857,7 +886,6 @@ sub _CheckCategory {
                 $CategoryHashRef->{$ParentID}->{$NewCategoryID} = $CurrNamePart;
                 $ParentID = $NewCategoryID;
             }
-
         }
     }
 

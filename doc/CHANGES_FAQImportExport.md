@@ -1,10 +1,14 @@
 # Change log of FAQImportExport
 * Copyright (C) 2006-2015 c.a.p.e. IT GmbH, http://www.cape-it.de/
+* Maintenance 2018 - Perl-Services.de, http://perl-services.de
 * $Id: CHANGES_FAQImportExport.md,v 1.8 2015/11/17 12:54:52 tlange Exp $
 
 * ROADMAP TASKS
 * (????/??/??)  - CR:T                  (export/import attachments into/from file)
 * (????/??/??)  - CR:T                  (update existing category in FAQ.pm (ID and full name given))
+
+#6.0.0 (2018/02/02)
+ * (2018/02/02) - ported to OTRS6 (reneeb)
 
 #5.0.0 (2015/11/17)
  * (2015/09/07) - CR: T2015082690000544 (added changes for OTRS 5.0.x) (tlange)
