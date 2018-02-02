@@ -1,0 +1,44 @@
+{
+    "name": "FAQImportExport",
+    "version": "6.0.1",
+    "framework": [
+        "6.0.x"
+    ],
+    "vendor": {
+        "name": "Perl-Services.de",
+        "url": "http://www.perl-services.de"
+    },
+    "license": "GNU GENERAL PUBLIC LICENSE Version 2, June 1991",
+    "requires" : {
+        "package" : {
+            "FAQ" : "6.0.1",
+            "ImportExport" : "6.0.1"
+        }
+    },
+    "description" : {
+        "en": "Provides ImportExportBackend for FAQ.",
+        "de": "Stellt ein FAQ Module für ImportExport zur Verfügung"
+    },
+    "intro" : [
+        {
+            "type": "Install",
+            "version": 0,
+            "lang": "en",
+            "title": "Install Information",
+            "text": [
+                "<strong>WELCOME</strong>",
+                "",
+                "You are about to install the OTRS module FAQImportExport.",
+                "",
+                "Required OTRS packages:",
+                "ImportExport 6.0.1 or higher",
+                "FAQ 6.0.1 or higher"
+            ]
+        }
+
+    ],
+    "code": [
+        { "type": "Install", "version": 0 },
+        { "type": "Upgrade", "version": 0 }
+    ]
+}
