@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_package version="1.1">
+    <Name>FAQImportExport</Name>
+    <Version>5.0.0</Version>
+    <Vendor>c.a.p.e. IT GmbH</Vendor>
+    <URL>http://www.cape-it.de/</URL>
+    <License>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</License>
+    <ChangeLog Version="5.0.0" Date="2015-11-17 13:56:00">CR: T2015082690000544 (added changes for OTRS 5.0.x) (tlange).</ChangeLog>
+    <ChangeLog Version="4.99.81" Date="2015-09-11 11:15:06">CR: (added changes for OTRS 5.0.x).</ChangeLog>
+    <ChangeLog Version="4.99.80" Date="2015-09-07 15:04:05">CR: (added changes for OTRS 5.0.x)</ChangeLog>
+    <Description Lang="en">Provides ImportExportBackend for FAQ.</Description>
+    <Framework>5.0.x</Framework>
+    <IntroInstall Lang="en" Title="Install Information" Type="pre">
+        
+        &lt;br/&gt;
+        &lt;strong&gt;WELCOME&lt;/strong&gt;
+        &lt;br/&gt;
+        &lt;br/&gt;
+        You are about to install the OTRS module FAQImportExport.&lt;br/&gt;
+        &lt;br/&gt;
+        &lt;br/&gt;
+        Required OTRS packages:&lt;br/&gt;
+        &lt;br/&gt;
+        ImportExport 5.0.1 or higher&lt;br/&gt;
+        FAQ 5.0.1 or higher&lt;br/&gt;
+        &lt;br/&gt;
+        c.a.p.e. IT ...easy.&lt;br/&gt;
+        &lt;br/&gt;
+    </IntroInstall>
+    <IntroInstall Lang="en" Title="Post-Installation Information" Type="post">
+        
+        &lt;br/&gt;
+        The package has been installed. Your configuration has been changed.&lt;br/&gt;
+        &lt;br/&gt;
+        Please see file OTRS_HOME/doc/en/USAGE_faqimportexport.pod for further documentation.&lt;br/&gt;
+        &lt;br/&gt;
+        &lt;br/&gt;
+        c.a.p.e. IT ...easy.&lt;br/&gt;
+        &lt;br/&gt;
+    </IntroInstall>
+    <IntroUninstall Lang="en" Title="Uninstallation Information" Type="pre">
+        
+        &lt;br/&gt;
+        &lt;strong&gt;WELCOME&lt;/strong&gt;
+        &lt;br/&gt;
+        &lt;br/&gt;
+        You are about to UNINSTALL the OTRS module FAQImportExport.&lt;br/&gt;
+        &lt;br/&gt;
+        &lt;br/&gt;
+        c.a.p.e. IT ...easy.&lt;br/&gt;
+        &lt;br/&gt;
+    </IntroUninstall>
+    <IntroUpgrade Lang="en" Title="Upgrade Information" Type="pre">
+        
+        &lt;br/&gt;
+        &lt;strong&gt;WELCOME&lt;/strong&gt;
+        &lt;br/&gt;
+        &lt;br/&gt;
+        You are about to upgrade the OTRS module FAQImportExport.&lt;br/&gt;
+        &lt;br/&gt;
+        &lt;br/&gt;
+        c.a.p.e. IT ...easy.&lt;br/&gt;
+        &lt;br/&gt;
+    </IntroUpgrade>
+    <PackageRequired Version="5.0.1">ImportExport</PackageRequired>
+    <PackageRequired Version="5.0.1">FAQ</PackageRequired>
+    <CodeInstall Type="post">
+    my $CodeModule = 'var::packagesetup::' . $Param{Structure}-&gt;{Name}-&gt;{Content};
+    $Kernel::OM-&gt;Get($CodeModule)-&gt;CodeInstall();
+    
+    </CodeInstall>
+    <CodeUpgrade Type="post">
+    my $CodeModule = 'var::packagesetup::' . $Param{Structure}-&gt;{Name}-&gt;{Content};
+    $Kernel::OM-&gt;Get($CodeModule)-&gt;CodeUpgrade();
+    
+    </CodeUpgrade>
+    <CodeUninstall Type="pre">
+    my $CodeModule = 'var::packagesetup::' . $Param{Structure}-&gt;{Name}-&gt;{Content};
+    $Kernel::OM-&gt;Get($CodeModule)-&gt;CodeUninstall();
+    
+    </CodeUninstall>
+    <CodeReinstall Type="post">
+    my $CodeModule = 'var::packagesetup::' . $Param{Structure}-&gt;{Name}-&gt;{Content};
+    $Kernel::OM-&gt;Get($CodeModule)-&gt;CodeReinstall();
+    
+    </CodeReinstall>
+    
+    
+    <Filelist>
+        <File Location="Kernel/Config/Files/FAQImportExport.xml" Permission="644"/>
+        <File Location="Kernel/Language/de_FAQImportExport.pm" Permission="644"/>
+        <File Location="Kernel/System/ImportExport/ObjectBackend/FAQ.pm" Permission="644"/>
+        <File Location="doc/CHANGES_FAQImportExport.md" Permission="644"/>
+        <File Location="doc/en/USAGE_faqimportexport.pod" Permission="644"/>
+        <File Location="var/packagesetup/FAQImportExport.pm" Permission="644"/>
+    </Filelist>
+    <DatabaseInstall>
+    </DatabaseInstall>
+    <DatabaseReinstall>
+    </DatabaseReinstall>
+    <DatabaseUninstall>
+    </DatabaseUninstall>
+</otrs_package>
