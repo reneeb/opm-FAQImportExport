@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
-    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.4) -->
+<otobo_package version="1.0">
+    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.44) -->
     <Name>FAQImportExport</Name>
-    <Version>6.0.1</Version>
-    <Framework>6.0.x</Framework>
-    <PackageRequired Version="6.0.1">FAQ</PackageRequired>
-    <PackageRequired Version="6.0.1">ImportExport</PackageRequired>
+    <Version>10.0.1</Version>
+    <Framework>10.0.x</Framework>
+    <PackageRequired Version="10.0.1">FAQ</PackageRequired>
+    <PackageRequired Version="10.0.1">ImportExport</PackageRequired>
     <Vendor>Perl-Services.de</Vendor>
     <URL>http://www.perl-services.de</URL>
     <Description Lang="de">Stellt ein FAQ Module für ImportExport zur Verfügung</Description>
@@ -15,7 +15,6 @@
         <File Permission="644" Location="Kernel/Config/Files/XML/FAQImportExport.xml" />
         <File Permission="644" Location="Kernel/Language/de_FAQImportExport.pm" />
         <File Permission="644" Location="Kernel/System/ImportExport/ObjectBackend/FAQ.pm" />
-        <File Permission="644" Location="doc/CHANGES_FAQImportExport.md" />
         <File Permission="644" Location="doc/FAQImportExport.json" />
         <File Permission="644" Location="doc/en/USAGE_faqimportexport.pod" />
         <File Permission="644" Location="var/packagesetup/FAQImportExport.pm" />
@@ -29,10 +28,10 @@
     <IntroInstall Type="post" Lang="en" Title="Install Information"><![CDATA[
             <strong>WELCOME</strong><br />
 <br />
-You are about to install the OTRS module FAQImportExport.<br />
+You are about to install the OTOBO module FAQImportExport.<br />
 <br />
-Required OTRS packages:<br />
-ImportExport 6.0.1 or higher<br />
-FAQ 6.0.1 or higher
+Required OTOBO packages:<br />
+ImportExport 10.0.1 or higher<br />
+FAQ 10.0.1 or higher
     ]]></IntroInstall>
-</otrs_package>
+</otobo_package>

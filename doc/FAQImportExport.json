@@ -1,9 +1,10 @@
 {
     "name": "FAQImportExport",
-    "version": "6.0.1",
+    "version": "10.0.1",
     "framework": [
-        "6.0.x"
+        "10.0.x"
     ],
+    "product": "otobo",
     "vendor": {
         "name": "Perl-Services.de",
         "url": "http://www.perl-services.de"
@@ -11,8 +12,8 @@
     "license": "GNU GENERAL PUBLIC LICENSE Version 2, June 1991",
     "requires" : {
         "package" : {
-            "FAQ" : "6.0.1",
-            "ImportExport" : "6.0.1"
+            "FAQ" : "10.0.1",
+            "ImportExport" : "10.0.1"
         }
     },
     "description" : {
@@ -28,11 +29,11 @@
             "text": [
                 "<strong>WELCOME</strong>",
                 "",
-                "You are about to install the OTRS module FAQImportExport.",
+                "You are about to install the OTOBO module FAQImportExport.",
                 "",
-                "Required OTRS packages:",
-                "ImportExport 6.0.1 or higher",
-                "FAQ 6.0.1 or higher"
+                "Required OTOBO packages:",
+                "ImportExport 10.0.1 or higher",
+                "FAQ 10.0.1 or higher"
             ]
         }
 
