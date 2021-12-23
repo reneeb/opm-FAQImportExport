@@ -2,8 +2,10 @@
 <otrs_package version="1.0">
     <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.4) -->
     <Name>FAQImportExport</Name>
-    <Version>6.0.1</Version>
+    <Version>6.0.2</Version>
     <Framework>6.0.x</Framework>
+    <Framework>6.1.x</Framework>
+    <Framework>6.2.x</Framework>
     <PackageRequired Version="6.0.1">FAQ</PackageRequired>
     <PackageRequired Version="6.0.1">ImportExport</PackageRequired>
     <Vendor>Perl-Services.de</Vendor>
@@ -29,9 +31,9 @@
     <IntroInstall Type="post" Lang="en" Title="Install Information"><![CDATA[
             <strong>WELCOME</strong><br />
 <br />
-You are about to install the OTRS module FAQImportExport.<br />
+You are about to install the Znuny module FAQImportExport.<br />
 <br />
-Required OTRS packages:<br />
+Required Znuny packages:<br />
 ImportExport 6.0.1 or higher<br />
 FAQ 6.0.1 or higher
     ]]></IntroInstall>
