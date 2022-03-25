@@ -22,6 +22,8 @@ package Kernel::System::ImportExport::ObjectBackend::FAQ;
 use strict;
 use warnings;
 
+use Kernel::Language qw(Translatable);
+
 our @ObjectDependencies = (
     'Kernel::System::HTMLUtils',
     'Kernel::System::Time',
@@ -255,6 +257,7 @@ sub SearchAttributesGet {
     my ( $Self, %Param ) = @_;
 
     my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+    my $FAQObject = $Kernel::OM->Get('Kernel::System::FAQ');
 
     # check needed stuff
     for my $Argument (qw(TemplateID UserID)) {
@@ -267,20 +270,66 @@ sub SearchAttributesGet {
         }
     }
 
-    my $AttributeList = [
+    my %FAQStates  = $FAQObject->StateList( UserID => 1 );
+    my %Languages  = $FAQObject->LanguageList( UserID => 1 );
+    my $Categories = $FAQObject->CategoryTreeList(
+        UserID => 1,
+        Valid  => 0,
+    );
 
-        #        {
-        #            Key   => 'FAQTitle',
-        #            Name  => 'Title',
-        #            Input => {
-        #                Type      => 'Text',
-        #                Size      => 80,
-        #                MaxLength => 255,
-        #            },
-        #        },
+    my $AttributeList = [
+        {
+            Key   => 'FAQTitle',
+            Name  => Translatable('Title'),
+            Input => {
+                Type      => 'Text',
+                Size      => 80,
+                MaxLength => 255,
+            },
+        },
+        {
+            Key   => 'Keyword',
+            Name  => Translatable('Keyword'),
+            Input => {
+                Type      => 'Text',
+                Size      => 80,
+                MaxLength => 255,
+            },
+        },
+        {
+            Key   => 'States',
+            Name  => Translatable('States'),
+            Input => {
+                Type        => 'Selection',
+                Data        => \%FAQStates,
+                Multiple    => 1,
+                Translation => 1,
+            },
+        },
+        {
+            Key   => 'LanguageIDs',
+            Name  => Translatable('Language'),
+            Input => {
+                Type        => 'Selection',
+                Data        => \%Languages,
+                Multiple    => 1,
+                Translation => 1,
+            },
+        },
+        {
+            Key   => 'CategoryIDs',
+            Name  => Translatable('Category'),
+            Input => {
+                Type        => 'Selection',
+                Data        => $Categories,
+                Multiple    => 1,
+                Translation => 1,
+                TreeView    => 1,
+            },
+        },
         {
             Key   => 'Limit',
-            Name  => 'Limit',
+            Name  => Translatable('Limit'),
             Input => {
                 Type      => 'Text',
                 Size      => 80,
@@ -388,13 +437,26 @@ sub ExportDataGet {
         $LogObject->Log(
             Priority => 'error',
             Message =>
-                "FAQ2CustomerUser: search data is not a hash ref - ignoring search limitation.",
+                "FAQExport: search data is not a hash ref - ignoring search limitation.",
         );
+    }
+
+    my %Opts;
+
+    for my $Key( qw/CategoryIDs LanguageIDs/ ) {
+        if ( $SearchData->{$Key} ) {
+            $Opts{$Key} = [ split /#####/, $SearchData->{$Key} ];
+        }
+    }
+
+    if ( $SearchData->{States} ) {
+        $Opts{States} = +{ map { $_ => 1 } split /#####/, $SearchData->{States} };
     }
 
     my @FAQList = $FAQObject->FAQSearch(
         Title => $SearchData->{FAQTitle} || '*',
         Limit => $SearchData->{Limit}    || '100000',
+        %Opts,
         UserID => 1,
     );
 
